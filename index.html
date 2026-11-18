@@ -47,7 +47,7 @@
 <section id="video">
   <h2>Video</h2>
   <figure>
-    <video controls playsinline preload="metadata" poster="assets/img/method.jpg?v=6" src="assets/video/method.mp4?v=6"></video>
+    <video controls playsinline preload="metadata" poster="assets/img/method.jpg?v=7" src="assets/video/method.mp4?v=7"></video>
   </figure>
 </section>
 
@@ -108,8 +108,8 @@
     <div class="vcard"><video class="lazy" muted loop playsinline preload="none" poster="assets/video/games/alchemy_bench.jpg" src="assets/video/games/alchemy_bench.mp4"></video><div class="t">Alchemy bench &middot; GUI Operation</div><div class="q">&ldquo;Slot 1: lapis lazuli, slot 5: leather, slot 6: wheat. Brew, then close the bench.&rdquo;</div></div>
     <div class="vcard"><video class="lazy" muted loop playsinline preload="none" poster="assets/video/games/rebound_court.jpg" src="assets/video/games/rebound_court.mp4"></video><div class="t">Rebound court &middot; Ball Games</div><div class="q">&ldquo;Get the ball to the right yellow band without it touching a grey block.&rdquo;</div></div>
   </div>
-  <p class="caption">One verified teacher episode from each of fifteen generated games, covering all six skill categories. Each label gives
-    the game, its category, and the episode's instruction.</p>
+  <p class="caption">One verified scripted-teacher rollout from each of fifteen of the 41 generated Roblox games in the post-training data,
+    spanning all six skill categories of the figure above. Labels give the game, its skill category, and the episode's instruction.</p>
 
   <h3>Diversity within a generated skill</h3>
   <div class="grid4">
@@ -134,7 +134,8 @@
 
   <h3>Instruction following on OpenHA</h3>
   <p class="text"><span class="sc">Script2Play</span> reaches 69.6% average success, exceeding the strongest prior trained policy,
-    Game-TARS MoE-mini (64.5%), by 5.1 percentage points, with 150.3&nbsp;h of synthetic demonstrations and behavior cloning.</p>
+    Game-TARS MoE-mini (64.5%), by 5.1 percentage points. This is the highest average among the compared trained game policies, using
+    150.3&nbsp;h of synthetic demonstrations and behavior cloning.</p>
   <div class="tbl"><table>
     <tr><th>Method</th><th>Training data</th><th>Total data</th><th>MC data</th><th>Embodied</th><th>GUI</th><th>Combat</th><th>Avg</th></tr>
     <tr class="group"><td colspan="8">Commercial VLMs (low reasoning effort)</td></tr>
@@ -163,9 +164,11 @@
     hour equivalents inferred from reported frame or token counts, not matched training budgets.</p>
 
   <h3>Transfer to five solo games in OmniGameArena</h3>
-  <p class="text">The same checkpoint achieves a mean score of 0.640, the highest among all compared agents: 0.167 above the best
-    commercial VLM, Gemini 3.1 Pro Preview (0.473), and 0.279 above the strongest human-gameplay policy, GameScaling-9B-S3 (0.361),
-    which uses 1,600&nbsp;h of human gameplay.</p>
+  <p class="text">We test the same checkpoint on UE5, which does not appear in post-training, and evaluate only OmniGameArena's 3D
+    instruction-following games to align with the task setting of our training data. <span class="sc">Script2Play</span> achieves a mean
+    score of 0.640, the highest score among all compared agents. It exceeds the best commercial VLM in this comparison, Gemini 3.1 Pro
+    Preview (0.473), by 0.167, and the strongest human-gameplay policy, GameScaling-9B-S3 (0.361), by 0.279. The latter uses
+    1,600&nbsp;h of human gameplay, compared with our 150.3&nbsp;h of synthetic demonstrations.</p>
   <div class="tbl"><table>
     <tr><th>Agent</th><th>Training data</th><th>Data scale</th><th>Obstacle Run3D</th><th>Last Stand</th><th>Monster Shoot</th><th>Scene Escape</th><th>Cue Chase</th><th>Mean</th></tr>
     <tr class="group"><td colspan="9">Commercial VLMs</td></tr>
@@ -205,8 +208,10 @@
 
   <h3>Transfer to ViZDoom</h3>
   <p class="text"><span class="sc">Script2Play</span> scores 12.92 without ViZDoom trajectories or target-game RL, compared with 14.54
-    for the zero-shot Game-TARS MoE-mini, which uses a much larger model and substantially more gameplay data. The Battle maps require
-    searching for health and ammunition as well as enemies, which is difficult for a policy that sees a single frame.</p>
+    for the zero-shot Game-TARS MoE-mini, which uses a much larger model and substantially more gameplay data. GameWAM is trained directly
+    on expert APPO trajectories from the four evaluation maps. The Battle maps require the agent to search for health and ammunition as well
+    as enemies, although the instruction only asks it to kill enemies; these implicit subgoals and the need to find enemies outside the
+    current view are difficult for our policy, which cannot track previously searched areas or supply locations from a single frame.</p>
   <div class="tbl"><table>
     <tr><th>Method</th><th>Data scale</th><th>Battle 1</th><th>Battle 2</th><th>Defend Line</th><th>Defend Center</th><th>Mean</th></tr>
     <tr class="group"><td colspan="7">In-domain (trained on ViZDoom APPO)</td></tr>
@@ -223,7 +228,12 @@
   <p class="caption">Mean reward over 50 episodes per map; higher is better. GameWAM uses target-domain training; the other policies transfer
     zero-shot. &dagger;Approximate data scale.</p>
 
-  <h3>Supervision comparison with Qwen2.5-VL-7B</h3>
+  <h3>Effect of the supervision source</h3>
+  <p class="text"><b>Shared-backbone comparison.</b> We compare three policies initialized from Qwen2.5-VL-7B: OpenHA trained on human
+    play, HiSTEVE trained with human-derived supervision and RL, and a separate <span class="sc">Script2Play</span> variant trained by
+    behavior cloning on 26.9&nbsp;h of Minecraft teacher demonstrations, without Roblox data. This comparison fixes the backbone; data
+    budgets and training procedures differ. We compare OpenHA success rates for all three and evaluate OpenHA and our policy zero-shot on
+    OmniGameArena.</p>
   <div class="tbl"><table>
     <tr class="group"><td colspan="7">(a) In-domain: OpenHA (Minecraft, success rate %)</td></tr>
     <tr><th>Supervision</th><th>Method</th><th>MC data</th><th>Emb.</th><th>GUI</th><th>Combat</th><th>Avg</th></tr>
@@ -242,27 +252,37 @@
       <td>0.000<span class="ci">[0.000, 0.000]</span></td><td class="best">0.040<span class="ci">[0.000, 0.108]</span></td>
       <td>0.000<span class="ci">[0.000, 0.000]</span></td><td class="best">0.028</td></tr>
   </table></div>
-  <p class="caption">Our 7B variant uses behavior cloning on 26.9&nbsp;h of Minecraft data, independently of the main 4B model. Brackets show
-    95% confidence intervals; bold marks column bests. HiSTEVE weights are unavailable for (b). &dagger;Approximate hour equivalents.</p>
-
-  <h3>Matched human versus scripted supervision</h3>
-  <p class="text">To isolate the supervision source, we train two Qwen3.5-4B policies on GameWAM's event-aligned human VPT clips or on
-    verified Minecraft teacher demonstrations, capped per task at the same window count (about 8.7&nbsp;h per source), with the same
-    observation and action format and training recipe, on 429 training tasks; 136 tasks are held out. A larger-data human control uses all
-    40.4&nbsp;h available for the same tasks.</p>
+  <p class="caption"><b>Supervision comparison with Qwen2.5-VL-7B.</b> Our 7B variant uses behavior cloning on 26.9&nbsp;h of Minecraft
+    data, independently of the main 4B model. Brackets show 95% confidence intervals; bold marks column bests. HiSTEVE weights are
+    unavailable for (b). &dagger;Approximate hour equivalents.</p>
+  <p class="text">Our policy achieves 45.9% OpenHA success versus 31.5% and 37.4%, leading both baselines across all three task groups
+    (a), with similar zero-shot scores to OpenHA (0.028 versus 0.023; b). Thus, the in-domain advantage persists when the backbone is held
+    fixed.</p>
+  <p class="text"><b>Matched human and scripted supervision.</b> To isolate the supervision source, we train two Qwen3.5-4B policies on
+    GameWAM's event-aligned human VPT clips or verified Minecraft teacher demonstrations. We use 429 training tasks and hold out 136 tasks.
+    For each training task, we cap both sources at the smaller window count and sample whole clips, yielding approximately 8.7&nbsp;h of
+    data per source. Both use instructions sampled from OpenHA task descriptions, the same observation/action format and training recipe,
+    and five epochs (2,405 steps, batch size 384). A larger-data human control uses all 40.4&nbsp;h available for the same training tasks,
+    for three epochs (6,683 steps). We evaluate each epoch on tasks from the OpenHA benchmark: 240 in-corpus tasks and all 136 held-out
+    tasks. The in-corpus tasks also appear in training, but all evaluations use environments excluded from both training sources.</p>
   <figure class="half">
     <img src="assets/img/supervision.png" alt="OpenHA success by training epoch for scripted-teacher and human-play supervision at 8.7 h each, and a 40.4 h human control" loading="lazy">
+    <figcaption><b>Matched human versus scripted supervision.</b> OpenHA success by epoch for Qwen3.5-4B with matched per-task data
+      budgets (8.7&nbsp;h per source). Bands show 95% task-bootstrap confidence intervals. Dashed line: 40.4&nbsp;h human control trained
+      for three epochs. Supplementary Table S6 of the paper reports paired differences.</figcaption>
   </figure>
-  <p class="caption">OpenHA success by epoch for Qwen3.5-4B with matched per-task data budgets (8.7&nbsp;h per source). Bands show 95%
-    task-bootstrap confidence intervals. Dashed line: 40.4&nbsp;h human control trained for three epochs.</p>
-  <p class="text">Scripted supervision leads at all five epochs on both task sets, with 9.7&ndash;18.3-point held-out gains. Its one-epoch
-    in-corpus success (51.6%) exceeds the best matched-human checkpoint (45.6%); from epoch two, it also beats the 40.4&nbsp;h control.
-    Gains are largest on Embodied and Combat; the larger human control leads on GUI.</p>
+  <p class="text"><b>Results.</b> Scripted supervision leads at all five epochs on both task sets, with 9.7&ndash;18.3-point held-out
+    gains. Its one-epoch in-corpus success (51.6%) exceeds the best matched-human checkpoint (45.6%); from epoch two, it also beats the
+    40.4&nbsp;h control. Gains are largest on Embodied and Combat; the larger human control leads on GUI. Scripted supervision improves
+    data efficiency and generalization.</p>
 
   <h3>Which skills transfer?</h3>
-  <p class="text">We train seven Qwen3.5-4B policies on all nonempty subsets of three Roblox skill categories, Combat &amp; Shooting (C,
-    20.5&nbsp;h), Traversal &amp; Parkour (T, 12.3&nbsp;h), and Dodging &amp; Survival (D, 15.8&nbsp;h), for 3,000 steps without Minecraft
-    data, and test transfer on one OmniGameArena game per category.</p>
+  <p class="text">We train seven Qwen3.5-4B policies on all nonempty subsets of Combat &amp; Shooting (C), Traversal &amp; Parkour (T),
+    and Dodging &amp; Survival (D). We evaluate transfer on three OmniGameArena games, one per skill category: Monster Shoot (C), Obstacle
+    Run3D (T), and Last Stand (D). This ablation uses subsets of the Roblox data, containing 20.5, 12.3, and 15.8&nbsp;h for C, T, and D,
+    respectively. All arms use the <span class="sc">Script2Play</span> training recipe for 3,000 steps, with no Minecraft data. Within each
+    batch, the selected categories share 85% equally, and web data supplies the remaining 15%. Each policy plays 10 episodes per game under
+    the time-paused protocol.</p>
   <div class="tbl"><table style="max-width: 640px; margin: 0 auto">
     <tr><th>Training categories</th><th>Monster Shoot</th><th>Obstacle Run3D</th><th>Last Stand</th><th>Mean</th></tr>
     <tr><td>C</td><td>0.722<span class="ci">[0.468, 0.976]</span></td><td>0.066<span class="ci">[0.064, 0.069]</span></td><td>0.108<span class="ci">[0.079, 0.138]</span></td><td>0.299</td></tr>
@@ -276,22 +296,27 @@
     <tr class="ours"><td><span class="sc">Script2Play</span> (4B)</td><td>0.972</td><td>0.374</td><td>0.436</td><td>0.594</td></tr>
     <tr><td>Random</td><td>0.008</td><td>0.000</td><td>0.088</td><td>0.032</td></tr>
   </table></div>
-  <p class="caption">Normalized scores over 10 episodes (mean with 95% confidence intervals; higher is better). Bold marks the best ablation
-    arm per column. Reference <span class="sc">Script2Play</span> uses 8,000 training steps on the full mixture and 5 evaluation episodes per
-    game.</p>
+  <p class="caption"><b>Skill-category ablation on OmniGameArena.</b> Normalized scores over 10 episodes (mean with 95% confidence
+    intervals; higher is better). C: Combat &amp; Shooting; T: Traversal &amp; Parkour; D: Dodging &amp; Survival. Bold marks the best
+    ablation arm per column. Reference <span class="sc">Script2Play</span> uses 8,000 training steps on the full mixture and 5 evaluation
+    episodes per game.</p>
   <p class="text">Without the corresponding training category, Monster Shoot scores 0 and the other two games remain near Random. Adding
-    traversal data hurts Last Stand: policies keep moving forward and fall sooner. Transfer therefore depends on both relevant skill coverage
-    and the compatibility of combined skills.</p>
+    traversal data hurts Last Stand: policies keep moving forward and fall sooner. Adding combat data also halves the dodging-data share
+    without the same drop. Transfer therefore depends on both relevant skill coverage and the compatibility of combined skills.</p>
 </section>
 
 <section id="rollouts">
   <h2>Closed-loop rollouts of <span class="sc">Script2Play</span></h2>
+  <p class="text"><b>Action sequences reveal how control transfers.</b> In OpenHA combat, the policy turns and advances toward the target
+    before attacking. In GUI tasks, it combines mouse positioning with item-manipulation clicks. In the held-out UE5 engine, ObstacleRun3D
+    requires forward motion interleaved with timed jumps, while CueChase requires camera adjustment, approach, and interaction. The same
+    action-chunk representation supports these distinct control behaviors in Minecraft and UE5. These successful episodes illustrate
+    policy behavior; the benchmark scores measure its reliability.</p>
   <figure>
     <img src="assets/img/actions.jpg" alt="Five sampled observation-action pairs from successful episodes in OpenHA combat, embodied and GUI tasks and OmniGameArena's ObstacleRun3D and CueChase" loading="lazy">
     <figcaption><b>Closed-loop policy actions across engines.</b> Each row shows five sampled observation&ndash;action pairs from a
       successful <span class="sc">Script2Play</span> episode. Actions contain mouse displacement (<i>dx</i>, <i>dy</i>) in pixels and four
-      50&nbsp;ms key groups (&middot;: no key; LB/RB: left/right mouse button; Spc: space). Each step covers 200&nbsp;ms. The same
-      action-chunk representation supports distinct control behaviors in Minecraft and UE5.</figcaption>
+      50&nbsp;ms key groups (&middot;: no key; LB/RB: left/right mouse button; Spc: space). Each step covers 200&nbsp;ms.</figcaption>
   </figure>
   <h3>Minecraft (OpenHA)</h3>
   <div class="vgrid c5">
