@@ -4,10 +4,10 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>From Game Generation to Game Playing</title>
-  <meta name="description" content="We introduce a framework that automatically generates game environments and expert demonstrations, and train Script2Play, a 4B game policy, on 150.3 hours of synthetic Minecraft and Roblox gameplay.">
+  <meta name="description" content="We introduce a framework that automatically generates game environments and expert demonstrations, and train Script2Play, a 4B game policy, on 150.3 hours of synthetic gameplay in Minecraft and Roblox.">
   <meta property="og:title" content="From Game Generation to Game Playing: Fully Automated Ability Training for Vision-Language-Action Models">
   <meta property="og:image" content="assets/img/teaser.jpg">
-  <link rel="stylesheet" href="style.css?v=12">
+  <link rel="stylesheet" href="style.css?v=13">
 </head>
 <body>
 
@@ -39,7 +39,7 @@
     LLM-powered agent uses game-building tools to construct executable environments and tasks targeting specified skills. Programmatic experts
     then use privileged simulator state to generate aligned instructions, rendered observations, and keyboard and mouse actions. We train our
     game policy, <span class="sc">Script2Play</span>, by post-training a 4B vision-language model with behavior cloning on 150.3 hours of
-    synthetic Minecraft and Roblox gameplay, without human gameplay demonstrations or reinforcement learning. Evaluation on multiple public
+    synthetic gameplay in Minecraft and Roblox, without human gameplay demonstrations or reinforcement learning. Evaluation on multiple public
     game benchmarks demonstrates that <span class="sc">Script2Play</span> follows gameplay instructions effectively and generalizes across game
     engines, highlighting the effectiveness of targeted synthetic supervision.</p>
 </section>
@@ -47,14 +47,14 @@
 <section id="video">
   <h2>Video</h2>
   <figure>
-    <video controls playsinline preload="metadata" poster="assets/img/method.jpg?v=5" src="assets/video/method.mp4?v=5"></video>
+    <video controls playsinline preload="metadata" poster="assets/img/method.jpg?v=6" src="assets/video/method.mp4?v=6"></video>
   </figure>
 </section>
 
 <section id="method">
   <h2>Method</h2>
   <figure>
-    <img src="assets/img/overview.png?v=12" alt="Overview: generate games from specifications, demonstrate with a scripted teacher, play with a VLM policy">
+    <img src="assets/img/overview.png?v=13" alt="Overview: generate games from specifications, demonstrate with a scripted teacher, play with a VLM policy">
     <figcaption><b>Overview.</b> <i>Generate:</i> a coding agent turns each specification into a game with scenes <i>s</i><sub>0</sub>,
       tasks (<i>g</i>, <i>V</i>), and a scripted teacher <i>&pi;</i>*; a game must pass five audit gates, and a failing game is repaired (up
       to three rounds) or discarded. <i>Demonstrate:</i> the teacher plans on privileged engine state but acts only through keyboard and
@@ -62,6 +62,12 @@
       rollout, which the verifier accepts (<i>V</i> = 1). Only verified rollouts enter <i>&Dscr;</i>. <i>Play:</i> behavior cloning on
       <i>&Dscr;</i> turns a pretrained VLM into the policy <i>&pi;</i><sub>&theta;</sub>, which writes each 200&nbsp;ms action chunk as text.
       It is evaluated on OpenHA in Minecraft, a training engine, and zero-shot on OmniGameArena (UE5) and ViZDoom.</figcaption>
+  </figure>
+  <figure>
+    <img src="assets/img/generation.jpg" alt="Generating a game and its demonstrations: specification, coding agent, four files, five audit gates, six templates; the teacher plays two arms of one scene" loading="lazy">
+    <figcaption><b>Generating a game and its demonstrations.</b> A coding agent generates a game and scripted teacher
+      <i>&pi;</i>* from a skill specification. Here, two tasks use the same scene but ask the teacher to shoot all red or all blue
+      targets. Only rollouts that complete the instructed task and pass verification enter <i>&Dscr;</i>.</figcaption>
   </figure>
 </section>
 
@@ -73,15 +79,39 @@
   </figure>
   <figure>
     <img src="assets/img/taxonomy.png?v=13" alt="Post-training data: Roblox and Minecraft data across different skills, with hours of verified play">
-    <figcaption class="sub">(a) Post-training data: Roblox and Minecraft data across different skills, with their mechanics and hours of
-      verified play.</figcaption>
-    <img src="assets/img/mosaic.png?v=13" alt="Representative frames of the Roblox and Minecraft training data" loading="lazy">
-    <figcaption class="sub">(b) Representative frames of the Roblox and Minecraft training data.</figcaption>
-    <figcaption><b>Training environments organized by reusable gameplay skills.</b> We post-train on Roblox and Minecraft data across
-      different skills and multiple camera views.</figcaption>
+    <img src="assets/img/mosaic.png?v=13" alt="Representative frames of the Roblox and Minecraft training data" loading="lazy" style="margin-top: 10px">
+    <figcaption><b>Training environments organized by reusable gameplay skills.</b> Top: skill categories, mechanics, and verified
+      gameplay hours. Bottom: representative frames. Roblox games cover six categories and Minecraft covers OpenHA's three groups, with
+      multiple camera views.</figcaption>
   </figure>
+  <p class="text">We choose the game mixture by surveying games on mainstream platforms and tasks in public benchmarks, then estimating how
+    frequently they require each gameplay skill. The 123.4&nbsp;h from Roblox covers 41 generated games in six categories: combat and
+    shooting (56.4&nbsp;h), traversal and parkour (21.5&nbsp;h), object interaction (20.8&nbsp;h), dodging and survival (19.7&nbsp;h), GUI
+    operation (3.7&nbsp;h), and ball games (1.3&nbsp;h). The 26.9&nbsp;h of Minecraft demonstrations comprise 31,494 verified episodes covering
+    mining and workstation use (5.0&nbsp;h), crafting and smelting (19.0&nbsp;h), and mob combat (2.9&nbsp;h).</p>
 
-  <h3>Diversity within a generated game</h3>
+  <h3>Fifteen of the 41 generated games</h3>
+  <div class="vgrid c5">
+    <div class="vcard"><video class="lazy" muted loop playsinline preload="none" poster="assets/video/games/shooting_gallery.jpg" src="assets/video/games/shooting_gallery.mp4"></video><div class="t">Shooting gallery &middot; Combat &amp; Shooting</div><div class="q">&ldquo;Go along the lane hitting all the blue plates and leaving the red ones.&rdquo;</div></div>
+    <div class="vcard"><video class="lazy" muted loop playsinline preload="none" poster="assets/video/games/energy_bow.jpg" src="assets/video/games/energy_bow.mp4"></video><div class="t">Energy bow &middot; Combat &amp; Shooting</div><div class="q">&ldquo;Hit the moving blue target.&rdquo;</div></div>
+    <div class="vcard"><video class="lazy" muted loop playsinline preload="none" poster="assets/video/games/laser_bridge.jpg" src="assets/video/games/laser_bridge.mp4"></video><div class="t">Laser bridge &middot; Traversal &amp; Parkour</div><div class="q">&ldquo;Past the sweeping laser, over the gap, under the low beam to the blue marker.&rdquo;</div></div>
+    <div class="vcard"><video class="lazy" muted loop playsinline preload="none" poster="assets/video/games/windshaft_glider.jpg" src="assets/video/games/windshaft_glider.mp4"></video><div class="t">Windshaft glider &middot; Traversal &amp; Parkour</div><div class="q">&ldquo;Fly through the blue opening, then the blue one.&rdquo;</div></div>
+    <div class="vcard"><video class="lazy" muted loop playsinline preload="none" poster="assets/video/games/rooftop_parkour.jpg" src="assets/video/games/rooftop_parkour.mp4"></video><div class="t">Rooftop parkour &middot; Traversal &amp; Parkour</div><div class="q">&ldquo;Jump the gap, crouch under the pipe and stop at the second flag.&rdquo;</div></div>
+    <div class="vcard"><video class="lazy" muted loop playsinline preload="none" poster="assets/video/games/sorting_bench.jpg" src="assets/video/games/sorting_bench.mp4"></video><div class="t">Sorting bench &middot; Object Interaction</div><div class="q">&ldquo;Place the long crate front to back inside the bay without hitting the crates beside it.&rdquo;</div></div>
+    <div class="vcard"><video class="lazy" muted loop playsinline preload="none" poster="assets/video/games/repair_room.jpg" src="assets/video/games/repair_room.mp4"></video><div class="t">Repair room &middot; Object Interaction</div><div class="q">&ldquo;Find the green valve and open it.&rdquo;</div></div>
+    <div class="vcard"><video class="lazy" muted loop playsinline preload="none" poster="assets/video/games/greenhouse.jpg" src="assets/video/games/greenhouse.mp4"></video><div class="t">Greenhouse &middot; Object Interaction</div><div class="q">&ldquo;Take the green pot.&rdquo;</div></div>
+    <div class="vcard"><video class="lazy" muted loop playsinline preload="none" poster="assets/video/games/freight_dock.jpg" src="assets/video/games/freight_dock.mp4"></video><div class="t">Freight dock &middot; Object Interaction</div><div class="q">&ldquo;Push the ball into the right bay.&rdquo;</div></div>
+    <div class="vcard"><video class="lazy" muted loop playsinline preload="none" poster="assets/video/games/blocking_arena.jpg" src="assets/video/games/blocking_arena.mp4"></video><div class="t">Blocking arena &middot; Dodging &amp; Survival</div><div class="q">&ldquo;Dodge the next ball.&rdquo;</div></div>
+    <div class="vcard"><video class="lazy" muted loop playsinline preload="none" poster="assets/video/games/deck_watch.jpg" src="assets/video/games/deck_watch.mp4"></video><div class="t">Deck watch &middot; Dodging &amp; Survival</div><div class="q">&ldquo;Stay in the red zone while its tiles fall, and end on a tile that holds.&rdquo;</div></div>
+    <div class="vcard"><video class="lazy" muted loop playsinline preload="none" poster="assets/video/games/backpack.jpg" src="assets/video/games/backpack.mp4"></video><div class="t">Backpack &middot; GUI Operation</div><div class="q">&ldquo;Craft red concrete powder: put red dye, sand, sand, sand, sand, gravel, gravel, gravel, gravel in the grid, any slots.&rdquo;</div></div>
+    <div class="vcard"><video class="lazy" muted loop playsinline preload="none" poster="assets/video/games/trading_terminal.jpg" src="assets/video/games/trading_terminal.mp4"></video><div class="t">Trading terminal &middot; GUI Operation</div><div class="q">&ldquo;Smelt exactly 3 polished blackstone bricks and take the 3 cracked polished blackstone bricks.&rdquo;</div></div>
+    <div class="vcard"><video class="lazy" muted loop playsinline preload="none" poster="assets/video/games/alchemy_bench.jpg" src="assets/video/games/alchemy_bench.mp4"></video><div class="t">Alchemy bench &middot; GUI Operation</div><div class="q">&ldquo;Slot 1: lapis lazuli, slot 5: leather, slot 6: wheat. Brew, then close the bench.&rdquo;</div></div>
+    <div class="vcard"><video class="lazy" muted loop playsinline preload="none" poster="assets/video/games/rebound_court.jpg" src="assets/video/games/rebound_court.mp4"></video><div class="t">Rebound court &middot; Ball Games</div><div class="q">&ldquo;Get the ball to the right yellow band without it touching a grey block.&rdquo;</div></div>
+  </div>
+  <p class="caption">One verified teacher episode from each of fifteen generated games, covering all six skill categories. Each label gives
+    the game, its category, and the episode's instruction.</p>
+
+  <h3>Diversity within a generated skill</h3>
   <div class="grid4">
     <div class="tile"><video class="lazy" muted loop playsinline preload="none" poster="assets/img/d0.jpg" src="assets/video/diversity/d0.mp4"></video><div class="t">Forest &middot; FOV 70&deg;</div><div class="q">&ldquo;Defeat the enemies around you with your sword and avoid their attacks.&rdquo;</div></div>
     <div class="tile"><video class="lazy" muted loop playsinline preload="none" poster="assets/img/d1.jpg" src="assets/video/diversity/d1.mp4"></video><div class="t">Forest &middot; FOV 69&deg;</div><div class="q">&ldquo;Several swordsmen attack you: hit them and stay out of their swings.&rdquo;</div></div>
@@ -92,17 +122,19 @@
     <div class="tile"><video class="lazy" muted loop playsinline preload="none" poster="assets/img/d6.jpg" src="assets/video/diversity/d6.mp4"></video><div class="t">Desert &middot; FOV 71&deg;</div><div class="q">&ldquo;Fight off the group of sword fighters.&rdquo;</div></div>
     <div class="tile"><video class="lazy" muted loop playsinline preload="none" poster="assets/img/d7.jpg" src="assets/video/diversity/d7.mp4"></video><div class="t">Forest &middot; FOV 72&deg;</div><div class="q">&ldquo;Defeat the enemies around you with your sword and avoid their attacks.&rdquo;</div></div>
   </div>
-  <p class="caption"><b>Diversity within a generated game.</b> Eight verified teacher episodes of Melee arena retain the same combat
-    mechanic while varying the world theme, characters, camera, dynamics, and instruction wording. Player and enemy appearances are sampled
-    from 20 and 9 Roblox avatar bundles; camera FOV ranges from 62&ndash;78&deg;. Themes also change terrain, props, sky, and lighting, while
-    arena size, enemy speeds, and control gains vary across episodes. Labels identify the theme, FOV, and instruction. Videos are cropped to
-    the play area.</p>
+  <p class="caption"><b>Diversity within a generated skill.</b> Eight verified Melee arena episodes share a combat mechanic while varying
+    the world theme, characters, camera, dynamics, and instruction wording. Player and enemy appearances are sampled from 20 and 9 Roblox
+    avatar bundles, respectively; camera FOV ranges from 62&ndash;78&deg;. Themes vary terrain, props, sky, and lighting. Arena size, enemy
+    speeds, and control gains also vary across episodes. Labels give the theme, FOV, and instruction. Videos are cropped to the play
+    area.</p>
 </section>
 
 <section id="results">
   <h2>Results</h2>
 
   <h3>Instruction following on OpenHA</h3>
+  <p class="text"><span class="sc">Script2Play</span> reaches 69.6% average success, exceeding the strongest prior trained policy,
+    Game-TARS MoE-mini (64.5%), by 5.1 percentage points, with 150.3&nbsp;h of synthetic demonstrations and behavior cloning.</p>
   <div class="tbl"><table>
     <tr><th>Method</th><th>Training data</th><th>Total data</th><th>MC data</th><th>Embodied</th><th>GUI</th><th>Combat</th><th>Avg</th></tr>
     <tr class="group"><td colspan="8">Commercial VLMs (low reasoning effort)</td></tr>
@@ -131,6 +163,9 @@
     hour equivalents inferred from reported frame or token counts, not matched training budgets.</p>
 
   <h3>Transfer to five solo games in OmniGameArena</h3>
+  <p class="text">The same checkpoint achieves a mean score of 0.640, the highest among all compared agents: 0.167 above the best
+    commercial VLM, Gemini 3.1 Pro Preview (0.473), and 0.279 above the strongest human-gameplay policy, GameScaling-9B-S3 (0.361),
+    which uses 1,600&nbsp;h of human gameplay.</p>
   <div class="tbl"><table>
     <tr><th>Agent</th><th>Training data</th><th>Data scale</th><th>Obstacle Run3D</th><th>Last Stand</th><th>Monster Shoot</th><th>Scene Escape</th><th>Cue Chase</th><th>Mean</th></tr>
     <tr class="group"><td colspan="9">Commercial VLMs</td></tr>
@@ -169,6 +204,9 @@
     compute budgets.</p>
 
   <h3>Transfer to ViZDoom</h3>
+  <p class="text"><span class="sc">Script2Play</span> scores 12.92 without ViZDoom trajectories or target-game RL, compared with 14.54
+    for the zero-shot Game-TARS MoE-mini, which uses a much larger model and substantially more gameplay data. The Battle maps require
+    searching for health and ammunition as well as enemies, which is difficult for a policy that sees a single frame.</p>
   <div class="tbl"><table>
     <tr><th>Method</th><th>Data scale</th><th>Battle 1</th><th>Battle 2</th><th>Defend Line</th><th>Defend Center</th><th>Mean</th></tr>
     <tr class="group"><td colspan="7">In-domain (trained on ViZDoom APPO)</td></tr>
@@ -206,10 +244,55 @@
   </table></div>
   <p class="caption">Our 7B variant uses behavior cloning on 26.9&nbsp;h of Minecraft data, independently of the main 4B model. Brackets show
     95% confidence intervals; bold marks column bests. HiSTEVE weights are unavailable for (b). &dagger;Approximate hour equivalents.</p>
+
+  <h3>Matched human versus scripted supervision</h3>
+  <p class="text">To isolate the supervision source, we train two Qwen3.5-4B policies on GameWAM's event-aligned human VPT clips or on
+    verified Minecraft teacher demonstrations, capped per task at the same window count (about 8.7&nbsp;h per source), with the same
+    observation and action format and training recipe, on 429 training tasks; 136 tasks are held out. A larger-data human control uses all
+    40.4&nbsp;h available for the same tasks.</p>
+  <figure class="half">
+    <img src="assets/img/supervision.png" alt="OpenHA success by training epoch for scripted-teacher and human-play supervision at 8.7 h each, and a 40.4 h human control" loading="lazy">
+  </figure>
+  <p class="caption">OpenHA success by epoch for Qwen3.5-4B with matched per-task data budgets (8.7&nbsp;h per source). Bands show 95%
+    task-bootstrap confidence intervals. Dashed line: 40.4&nbsp;h human control trained for three epochs.</p>
+  <p class="text">Scripted supervision leads at all five epochs on both task sets, with 9.7&ndash;18.3-point held-out gains. Its one-epoch
+    in-corpus success (51.6%) exceeds the best matched-human checkpoint (45.6%); from epoch two, it also beats the 40.4&nbsp;h control.
+    Gains are largest on Embodied and Combat; the larger human control leads on GUI.</p>
+
+  <h3>Which skills transfer?</h3>
+  <p class="text">We train seven Qwen3.5-4B policies on all nonempty subsets of three Roblox skill categories, Combat &amp; Shooting (C,
+    20.5&nbsp;h), Traversal &amp; Parkour (T, 12.3&nbsp;h), and Dodging &amp; Survival (D, 15.8&nbsp;h), for 3,000 steps without Minecraft
+    data, and test transfer on one OmniGameArena game per category.</p>
+  <div class="tbl"><table style="max-width: 640px; margin: 0 auto">
+    <tr><th>Training categories</th><th>Monster Shoot</th><th>Obstacle Run3D</th><th>Last Stand</th><th>Mean</th></tr>
+    <tr><td>C</td><td>0.722<span class="ci">[0.468, 0.976]</span></td><td>0.066<span class="ci">[0.064, 0.069]</span></td><td>0.108<span class="ci">[0.079, 0.138]</span></td><td>0.299</td></tr>
+    <tr><td>T</td><td>0.000<span class="ci">[0.000, 0.000]</span></td><td>0.215<span class="ci">[0.134, 0.295]</span></td><td>0.139<span class="ci">[0.088, 0.190]</span></td><td>0.118</td></tr>
+    <tr><td>D</td><td>0.000<span class="ci">[0.000, 0.000]</span></td><td>0.000<span class="ci">[0.000, 0.000]</span></td><td>0.744<span class="ci">[0.588, 0.900]</span></td><td>0.248</td></tr>
+    <tr><td>C+T</td><td>0.985<span class="ci">[0.956, 1.000]</span></td><td class="best">0.370<span class="ci">[0.259, 0.481]</span></td><td>0.118<span class="ci">[0.109, 0.126]</span></td><td>0.491</td></tr>
+    <tr><td>C+D</td><td class="best">0.991<span class="ci">[0.979, 1.000]</span></td><td>0.014<span class="ci">[0.005, 0.023]</span></td><td class="best">0.812<span class="ci">[0.663, 0.961]</span></td><td class="best">0.606</td></tr>
+    <tr><td>T+D</td><td>0.000<span class="ci">[0.000, 0.000]</span></td><td>0.233<span class="ci">[0.126, 0.341]</span></td><td>0.427<span class="ci">[0.354, 0.499]</span></td><td>0.220</td></tr>
+    <tr><td>C+T+D</td><td>0.969<span class="ci">[0.948, 0.990]</span></td><td>0.288<span class="ci">[0.170, 0.407]</span></td><td>0.428<span class="ci">[0.390, 0.467]</span></td><td>0.562</td></tr>
+    <tr class="group"><td colspan="5">Reference</td></tr>
+    <tr class="ours"><td><span class="sc">Script2Play</span> (4B)</td><td>0.972</td><td>0.374</td><td>0.436</td><td>0.594</td></tr>
+    <tr><td>Random</td><td>0.008</td><td>0.000</td><td>0.088</td><td>0.032</td></tr>
+  </table></div>
+  <p class="caption">Normalized scores over 10 episodes (mean with 95% confidence intervals; higher is better). Bold marks the best ablation
+    arm per column. Reference <span class="sc">Script2Play</span> uses 8,000 training steps on the full mixture and 5 evaluation episodes per
+    game.</p>
+  <p class="text">Without the corresponding training category, Monster Shoot scores 0 and the other two games remain near Random. Adding
+    traversal data hurts Last Stand: policies keep moving forward and fall sooner. Transfer therefore depends on both relevant skill coverage
+    and the compatibility of combined skills.</p>
 </section>
 
 <section id="rollouts">
   <h2>Closed-loop rollouts of <span class="sc">Script2Play</span></h2>
+  <figure>
+    <img src="assets/img/actions.jpg" alt="Five sampled observation-action pairs from successful episodes in OpenHA combat, embodied and GUI tasks and OmniGameArena's ObstacleRun3D and CueChase" loading="lazy">
+    <figcaption><b>Closed-loop policy actions across engines.</b> Each row shows five sampled observation&ndash;action pairs from a
+      successful <span class="sc">Script2Play</span> episode. Actions contain mouse displacement (<i>dx</i>, <i>dy</i>) in pixels and four
+      50&nbsp;ms key groups (&middot;: no key; LB/RB: left/right mouse button; Spc: space). Each step covers 200&nbsp;ms. The same
+      action-chunk representation supports distinct control behaviors in Minecraft and UE5.</figcaption>
+  </figure>
   <h3>Minecraft (OpenHA)</h3>
   <div class="vgrid c5">
     <div class="vcard"><video class="lazy" muted loop playsinline preload="none" poster="assets/video/openha/mine_block_acacia_leaves_r01.jpg" src="assets/video/openha/mine_block_acacia_leaves_r01.mp4"></video><div class="q">&ldquo;Trim the tree by mining the acacia leaves.&rdquo;</div></div>
@@ -218,12 +301,22 @@
     <div class="vcard"><video class="lazy" muted loop playsinline preload="none" poster="assets/video/openha/mine_block_carrots_r00.jpg" src="assets/video/openha/mine_block_carrots_r00.mp4"></video><div class="q">&ldquo;Harvest carrots from the farmland.&rdquo;</div></div>
     <div class="vcard"><video class="lazy" muted loop playsinline preload="none" poster="assets/video/openha/mine_block_lily_pad_r00.jpg" src="assets/video/openha/mine_block_lily_pad_r00.mp4"></video><div class="q">&ldquo;Mine the lily pad from the water.&rdquo;</div></div>
     <div class="vcard"><video class="lazy" muted loop playsinline preload="none" poster="assets/video/openha/mine_block_bell_r00.jpg" src="assets/video/openha/mine_block_bell_r00.mp4"></video><div class="q">&ldquo;Break the bell in the village.&rdquo;</div></div>
+    <div class="vcard"><video class="lazy" muted loop playsinline preload="none" poster="assets/video/openha/mine_block_netherrack_r00.jpg" src="assets/video/openha/mine_block_netherrack_r00.mp4"></video><div class="q">&ldquo;Mine the netherrack in the Nether.&rdquo;</div></div>
+    <div class="vcard"><video class="lazy" muted loop playsinline preload="none" poster="assets/video/openha/mine_block_cocoa_r00.jpg" src="assets/video/openha/mine_block_cocoa_r00.mp4"></video><div class="q">&ldquo;Break the cocoa pod.&rdquo;</div></div>
+    <div class="vcard"><video class="lazy" muted loop playsinline preload="none" poster="assets/video/openha/mine_block_snow_r01.jpg" src="assets/video/openha/mine_block_snow_r01.mp4"></video><div class="q">&ldquo;Break the snow block.&rdquo;</div></div>
+    <div class="vcard"><video class="lazy" muted loop playsinline preload="none" poster="assets/video/openha/mine_block_kelp_plant_r00.jpg" src="assets/video/openha/mine_block_kelp_plant_r00.mp4"></video><div class="q">&ldquo;Mine the kelp plant underwater.&rdquo;</div></div>
+    <div class="vcard"><video class="lazy" muted loop playsinline preload="none" poster="assets/video/openha/mine_block_sand_r00.jpg" src="assets/video/openha/mine_block_sand_r00.mp4"></video><div class="q">&ldquo;Mine sand by the water.&rdquo;</div></div>
     <div class="vcard"><video class="lazy" muted loop playsinline preload="none" poster="assets/video/openha/kill_entity_drowned_r00.jpg" src="assets/video/openha/kill_entity_drowned_r00.mp4"></video><div class="q">&ldquo;Hunt the drowned.&rdquo;</div></div>
     <div class="vcard"><video class="lazy" muted loop playsinline preload="none" poster="assets/video/openha/kill_entity_zombie_r01.jpg" src="assets/video/openha/kill_entity_zombie_r01.mp4"></video><div class="q">&ldquo;Combat the zombie.&rdquo;</div></div>
     <div class="vcard"><video class="lazy" muted loop playsinline preload="none" poster="assets/video/openha/kill_entity_creeper_r01.jpg" src="assets/video/openha/kill_entity_creeper_r01.mp4"></video><div class="q">&ldquo;Combat the creeper.&rdquo;</div></div>
     <div class="vcard"><video class="lazy" muted loop playsinline preload="none" poster="assets/video/openha/kill_entity_spider_r00.jpg" src="assets/video/openha/kill_entity_spider_r00.mp4"></video><div class="q">&ldquo;Hunt a spider.&rdquo;</div></div>
     <div class="vcard"><video class="lazy" muted loop playsinline preload="none" poster="assets/video/openha/kill_entity_guardian_r01.jpg" src="assets/video/openha/kill_entity_guardian_r01.mp4"></video><div class="q">&ldquo;Combat the guardian.&rdquo;</div></div>
     <div class="vcard"><video class="lazy" muted loop playsinline preload="none" poster="assets/video/openha/kill_entity_pillager_r00.jpg" src="assets/video/openha/kill_entity_pillager_r00.mp4"></video><div class="q">&ldquo;Hunt the pillager.&rdquo;</div></div>
+    <div class="vcard"><video class="lazy" muted loop playsinline preload="none" poster="assets/video/openha/kill_entity_polar_bear_r00.jpg" src="assets/video/openha/kill_entity_polar_bear_r00.mp4"></video><div class="q">&ldquo;Hunt a polar bear.&rdquo;</div></div>
+    <div class="vcard"><video class="lazy" muted loop playsinline preload="none" poster="assets/video/openha/kill_entity_witch_r00.jpg" src="assets/video/openha/kill_entity_witch_r00.mp4"></video><div class="q">&ldquo;Hunt the witch.&rdquo;</div></div>
+    <div class="vcard"><video class="lazy" muted loop playsinline preload="none" poster="assets/video/openha/kill_entity_husk_r00.jpg" src="assets/video/openha/kill_entity_husk_r00.mp4"></video><div class="q">&ldquo;Hunt the husk.&rdquo;</div></div>
+    <div class="vcard"><video class="lazy" muted loop playsinline preload="none" poster="assets/video/openha/kill_entity_skeleton_r00.jpg" src="assets/video/openha/kill_entity_skeleton_r00.mp4"></video><div class="q">&ldquo;Hunt the skeleton.&rdquo;</div></div>
+    <div class="vcard"><video class="lazy" muted loop playsinline preload="none" poster="assets/video/openha/kill_entity_turtle_r01.jpg" src="assets/video/openha/kill_entity_turtle_r01.mp4"></video><div class="q">&ldquo;Harm a turtle.&rdquo;</div></div>
     <div class="vcard"><video class="lazy" muted loop playsinline preload="none" poster="assets/video/openha/craft_item_acacia_sign_r00.jpg" src="assets/video/openha/craft_item_acacia_sign_r00.mp4"></video><div class="q">&ldquo;Craft an acacia sign.&rdquo;</div></div>
     <div class="vcard"><video class="lazy" muted loop playsinline preload="none" poster="assets/video/openha/craft_item_stone_sword_r01.jpg" src="assets/video/openha/craft_item_stone_sword_r01.mp4"></video><div class="q">&ldquo;Craft a stone sword at the crafting table.&rdquo;</div></div>
     <div class="vcard"><video class="lazy" muted loop playsinline preload="none" poster="assets/video/openha/craft_item_ender_chest_r01.jpg" src="assets/video/openha/craft_item_ender_chest_r01.mp4"></video><div class="q">&ldquo;Put obsidian and an eye of ender in the crafting grid to craft an ender_chest.&rdquo;</div></div>
